@@ -44,6 +44,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/quizdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 0000
+
   question-service:
     build:
       context: ./question-service
@@ -57,7 +58,39 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 0000
 
+  prometheus:
+    image: prom/prometheus:v2.30.0
+    volumes:
+      - ./container-monitor:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    ports:
+      - '9090:9090'
+    networks:
+      - backend-network
 
+  loki:
+    image: grafana/loki:2.5.0
+    ports:
+      - '3100:3100'
+    networks:
+      - backend-network
+
+  promtail:
+    image: grafana/promtail:2.5.0
+    volumes:
+      - /var/log:/var/log
+      - ./container-monitor:/etc/promtail
+    command: -config.file=/etc/promtail/promtail.yaml
+    networks:
+      - backend-network
+
+  grafana:
+    image: grafana/grafana:8.3.0
+    ports:
+      - '3000:3000'
+    networks:
+      - backend-network
 
 networks:
   backend-network:
