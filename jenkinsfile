@@ -41,7 +41,7 @@ pipeline {
             // Post-build actions to execute on success
             slackSend channel: '#jenkins-testing',
                       color: 'good',
-                      message: "sucessful"
+                      message: "sucess"
         }
         failure {
             // Post-build actions to execute on failure
